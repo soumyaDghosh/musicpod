@@ -13,9 +13,22 @@
   <url type="donation">https://github.com/sponsors/Feichtmeier</url>
   
   <description>
-    <p>
-      Play local audio files, browse podcasts online or listen to internet radio stations.
-    </p>
+    <p>Play local audio files, browse podcasts online or listen to internet radio stations - all in one app!</p>
+    <ul>
+      <li>Find your local audio library sorted by metadata</li>
+      <li>Search for local audio files sorted by title, album, genre, and artist instantly</li>
+      <li>Play internet radio and TV stations and search them by tag, name, or country, with icytags displayed and images loaded on demand!</li>
+      <li>Play podcasts and find them by country, topic, and name</li>
+      <li>Download podcasts</li>
+      <li>Video podcasts support!</li>
+      <li>Pin your favorite albums</li>
+      <li>Subscribe to podcasts</li>
+      <li>Gather a collection of your favorite radio/TV stations</li>
+      <li>Jump easily between local audio genres and radio station genres</li>
+      <li>Collect your favorite songs with the heart button</li>
+      <li>And many more things</li>
+    </ul>
+    <p>The podcast and radio features do currently need internet access and thus the network-manager-observe permission is being used to display a disconnect from the internet in the user interface.</p>
   </description>
 <developer id="org.feichtmeier">
   <name>Frederik Feichtmeier</name>

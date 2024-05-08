@@ -2,12 +2,15 @@
 <component type="desktop-application">
   <id>org.feichtmeier.Musicpod</id>
   
-  <name>musicpod</name>
+  <name translate="no">Musicpod</name>
   <summary>Music, podcast and internet radio player</summary>
   
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MPL-2.0</project_license>
   <url type="homepage">https://github.com/ubuntu-flutter-community/musicpod</url>
+  <url type="bugtracker">https://github.com/ubuntu-flutter-community/musicpod/issues</url>
+  <url type="vcs-browser">https://github.com/ubuntu-flutter-community/musicpod</url>
+  <url type="donation">https://github.com/sponsors/Feichtmeier</url>
   
   <description>
     <p>
@@ -17,6 +20,7 @@
 <developer id="org.feichtmeier">
   <name>Frederik Feichtmeier</name>
 </developer>
+<update_contact>frederik.feichtmeier@gmail.com</update_contact>
 
   <screenshots>
     <screenshot type="default">
@@ -46,8 +50,8 @@
   </screenshots>
   
   <releases>
-    <release date="2024-05-06" version="0.3.7"/>
-    <release date="2022-03-12" version="0.1.1"/>
+    <release date="2024-05-06" version="1.3.7"/>
+    <release date="2022-03-12" version="1.1.1"/>
   </releases>
 
   <content_rating type="oars-1.1" />

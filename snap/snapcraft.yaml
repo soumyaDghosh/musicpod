@@ -1,24 +1,12 @@
 name: musicpod
-title: MusicPod
-version: git
-summary: Music, podcast and internet radio player
-description: Play local audio files, browse podcasts online or listen to internet radio stations.
-website: https://github.com/ubuntu-flutter-community/musicpod
-contact: frederik.feichtmeier@gmail.com
-source-code: https://github.com/ubuntu-flutter-community/musicpod
-icon: snap/gui/musicpod.png
-
+adopt-info: musicpod
 confinement: strict
 base: core22
 grade: stable
-license: MPL-2.0
 
 architectures:
   - build-on: amd64
   - build-on: arm64
-
-environment:
-  LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/gnome-platform/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/blas:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/lapack:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/caca:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/vdpau:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/mfx
 
 apps:
   musicpod:
@@ -30,6 +18,9 @@ apps:
       - network-manager-observe
       - home
       - removable-media
+    environment:
+      LD_LIBRARY_PATH: $SNAP/ffmpeg-platform/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
+      PATH: $SNAP/ffmpeg-platform/usr/bin:$PATH
     slots:
       - mpris
 
@@ -38,24 +29,24 @@ slots:
     interface: dbus
     bus: session
     name: org.feichtmeier.Musicpod
+  ffmpeg-2204:
+    interface: content
+    target: ffmpeg-platform
+    default-provider: ffmpeg-2204
 
 parts:
   mpv:
     source: https://github.com/mpv-player/mpv.git
-    source-tag: 'v0.36.0'
+    source-tag: "v0.36.0"
     plugin: meson
     meson-parameters:
       - --prefix=/usr
       - --buildtype=release
       - -Dlibmpv=true
-    build-packages:
-      - curl
-      - libavcodec-dev
-      - libavfilter-dev
-      - libass-dev
-      - libx264-dev
-      - libvorbis-dev
-      - libjpeg-turbo8-dev
+    build-environment:
+      - PKG_CONFIG_PATH: /snap/ffmpeg-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pkgconfig:$PKG_CONFIG_PATH
+    build-snaps:
+      - ffmpeg-2204-sdk
     prime:
       - usr/lib/*/libmpv*
 
@@ -69,7 +60,7 @@ parts:
       mkdir -p $CRAFT_PART_INSTALL/usr/libexec
       cp -r $CRAFT_PART_SRC $CRAFT_PART_INSTALL/usr/libexec/flutter
       ln -s $CRAFT_PART_INSTALL/usr/libexec/flutter/bin/flutter $CRAFT_PART_INSTALL/usr/bin/flutter
-      ln -s $SNAPCRAFT_PART_INSTALL/usr/libexec/flutter/bin/dart $SNAPCRAFT_PART_INSTALL/usr/bin/dart
+      ln -s $CRAFT_PART_INSTALL/usr/libexec/flutter/bin/dart $CRAFT_PART_INSTALL/usr/bin/dart
       $CRAFT_PART_INSTALL/usr/bin/flutter doctor
     build-packages:
       - clang
@@ -80,15 +71,17 @@ parts:
       - unzip
       - xz-utils
       - zip
-    override-prime: ''
+    override-prime: ""
 
   musicpod:
     after: [flutter-git, mpv]
     source: .
     source-type: git
     plugin: nil
+    parse-info: [share/appdata/org.feichtmeier.Musicpod.appdata.xml]
     build-environment:
-      - LD_LIBRARY_PATH: $SNAPCRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+      - LD_LIBRARY_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+      - PKG_CONFIG_PATH: /snap/ffmpeg-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/pkgconfig:$PKG_CONFIG_PATH
     override-build: |
       set -eux
       curl https://sh.rustup.rs -sSf | sh -s -- -y
@@ -98,18 +91,16 @@ parts:
       dart pub get
       flutter build linux --release -v
       cp -r build/linux/*/release/bundle/* $CRAFT_PART_INSTALL/bin/
+      mkdir -p $CRAFT_PART_INSTALL/share/appdata
+      cp -r $CRAFT_PART_SRC/flatpak/org.feichtmeier.Musicpod.appdata.xml $CRAFT_PART_INSTALL/share/appdata/org.feichtmeier.Musicpod.appdata.xml
 
   deps:
     plugin: nil
     stage-packages:
-      - libaom3
-      - libass9
       - libblas3
       - libbluray2
       - libbs2b0
-      - libchromaprint1
       - libcodec2-1.0
-      - libflite1
       - libgme0
       - libgsm1
       - liblapack3
@@ -136,19 +127,12 @@ parts:
       - libva-x11-2
       - libvdpau1
       - libvidstab1.1
-      - libx265-199
       - libxvidcore4
       - libzimg2
       - libzmq5
       - libzvbi0
-      - libavfilter7
-      - libavformat58
-      - libpostproc55
-      - libswscale5
       - libsrt1.4-gnutls
       - ocl-icd-libopencl1
-      - on amd64:
-        - libmfx1
     prime:
       - usr/lib/*/blas/libblas.so*
       - usr/lib/*/lapack/liblapack.so*
@@ -215,9 +199,9 @@ parts:
   cleanup:
     after: [musicpod, deps]
     plugin: nil
-    build-snaps: [core22, gtk-common-themes, gnome-42-2204]
+    build-snaps: [core22, gtk-common-themes, gnome-42-2204, ffmpeg-2204]
     override-prime: |
       set -eux
-      for snap in "core22" "gtk-common-themes" "gnome-42-2204"; do
+      for snap in "core22" "gtk-common-themes" "gnome-42-2204" "ffmpeg-2204"; do
         cd "/snap/$snap/current" && find . -type f,l -name *.so.* -exec rm -f "$CRAFT_PRIME/{}" \;
       done
